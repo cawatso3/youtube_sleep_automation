@@ -1,13 +1,13 @@
 import logging
 import time
 import os
+import shutil
 import replicate
 import requests
 from datetime import datetime
-from moviepy.editor import VideoFileClip, AudioFileClip, concatenate_audioclips
+# from moviepy.editor import VideoFileClip, AudioFileClip, concatenate_audioclips
 from pydub import AudioSegment
-
-
+import zipfile
 
 class ExampleShell:
     def __init__(self, configs):
@@ -19,33 +19,32 @@ class ExampleShell:
 
         # Start timer
         start_time = time.time()
-        logging.info("Starting ExampleShell...")
+        logging.info("Starting Youtube Shell...")
 
         # Create a new directory for this run
-        # self.output_dir = self.create_output_directory()
+        self.output_dir = self.create_output_directory()
+
+        # create staging directory
+        self.staging_dir = self.create_staging_directory()
 
         # authenticate replicate api
-        # self.replicate_token = os.getenv('REPLICATE_API_TOKEN')
+        self.replicate_token = os.getenv('REPLICATE_API_TOKEN')
 
         # Initialize Replicate API client
-        # self.replicate_client = replicate.Client(api_token=self.replicate_token)
+        self.replicate_client = replicate.Client(api_token=self.replicate_token)
 
 
         # MY CODE HERE
 
-        # Generate music and video, download them, and store links
-        # self.process_audio_and_video()
+        # # My code to test the photo logic
+        prompt = "sleepy galaxy in the style of TKYO"
+        photo = self.handle_staging_photos(prompt)  # This will either use a staged photo or generate new ones
 
-        # Define paths to your input and output files
-        input_audio_path = "out.mp3"
-        output_audio_path = "looped_audio.mp3"
+        # # Log the photo used
+        logging.info(f"Photo used for this run: {photo}")
 
-        # Loop the input audio file
-        loop_count = 2  # Number of loops
-        crossfade_duration = 1000  # 2 seconds of crossfade
 
-        # Call the function to loop the audio
-        self.loop_audio_smoothly(input_audio_path, output_audio_path, loop_count, crossfade_duration)
+
 
 
         # End SHELL Timer
@@ -87,6 +86,26 @@ class ExampleShell:
         os.makedirs(output_dir, exist_ok=True)
         logging.info(f"Created directory: {output_dir}")
         return output_dir
+
+    @staticmethod
+    def download_photo_file(url, destination):
+        """Download a file from the provided URL and save it to the destination path."""
+        try:
+            response = requests.get(url, stream=True)
+            response.raise_for_status()
+            with open(destination, 'wb') as file:
+                for chunk in response.iter_content(chunk_size=8192):
+                    file.write(chunk)
+            print(f"File downloaded successfully: {destination}")
+        except Exception as e:
+            print(f"An error occurred while downloading the file: {e}")
+
+    @staticmethod
+    def create_staging_directory():
+        # Create a staging directory if it doesn't exist
+        staging_dir = os.path.join(os.getcwd(), "staging")
+        os.makedirs(staging_dir, exist_ok=True)
+        return staging_dir
 
     @staticmethod
     def download_audio_file(url, file_name):
@@ -157,6 +176,69 @@ class ExampleShell:
             logging.error(f"An error occurred while generating music: {e}")
             return None
 
+    def generate_photo_from_text(self, prompt):
+        """
+        Generate a photo from text using the API model and store 3 unused photos in the staging area.
+        """
+        try:
+            # Call the API model to generate photos
+            output = replicate.run(
+                "levelsio/neon-tokyo:64d1f3c37e1702a4b659e6373b3e4b7b4d1feda75337d9581bc3e893df516436",
+                input={
+                    "model": "dev",
+                    # "prompt": "sleepy galaxy in the style of TKYO",
+                    "prompt": prompt,
+                    "lora_scale": 0.75,
+                    "num_outputs": 4,
+                    "aspect_ratio": "4:3",
+                    "output_format": "jpg",
+                    "guidance_scale": 3.5,
+                    "output_quality": 80,
+                    "prompt_strength": 0.8,
+                    "extra_lora_scale": 0.8,
+                    "num_inference_steps": 28
+                }
+            )
+
+            print("Generated zip file URL:", output)
+
+            # Download each photo and save to the output directory
+            extracted_files = []
+            for idx, photo_url in enumerate(output):
+                photo_path = os.path.join(self.output_dir, f"photo_{idx}.jpg")
+                self.download_photo_file(photo_url, photo_path)
+                extracted_files.append(photo_path)
+
+            # Use the first photo for immediate use
+            immediate_photo = extracted_files[0]
+            print(f"Immediate photo saved at: {immediate_photo}")
+
+            # Move the other photos to the staging area
+            for photo_path in extracted_files[1:]:
+                shutil.move(photo_path, self.staging_dir)
+                print(f"Photo {photo_path} saved to the staging area.")
+
+            return immediate_photo
+
+        except Exception as e:
+            print(f"An error occurred: {e}")
+
+    def handle_staging_photos(self, prompt):
+        """
+        Check if there are photos in the staging directory. If yes, use one and remove it from staging.
+        If not, generate 4 new photos, use one, and store the remaining 3 in staging.
+        """
+        staged_photos = [f for f in os.listdir(self.staging_dir) if f.endswith('.jpg')]
+
+        if staged_photos:
+            # Use one staged photo and remove it from the staging directory
+            photo_to_use = staged_photos[0]
+            shutil.move(os.path.join(self.staging_dir, photo_to_use), self.output_dir)
+            print(f"Using staged photo: {photo_to_use}")
+            return photo_to_use
+        else:
+            # No photos in staging, generate new ones
+            return self.generate_photo_from_text(prompt)
 
     @staticmethod
     def generate_video_from_text():

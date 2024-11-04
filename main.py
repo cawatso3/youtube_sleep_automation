@@ -4,7 +4,7 @@ from example.example import ExampleShell
 
 def main():
     # Load environment variables from .env_run
-    load_dotenv(dotenv_path='.env_run')
+    # load_dotenv(dotenv_path='.env_run')
 
     configs = {
         "run_primary_shell": os.getenv('run_primary_shell') == 'True',
