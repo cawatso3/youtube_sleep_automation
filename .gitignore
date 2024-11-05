@@ -1,3 +1,6 @@
+staging/
+local_run/
+output_*/
 staging/*
 local_run/*
 output_*/*
