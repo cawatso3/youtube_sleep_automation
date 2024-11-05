@@ -12,11 +12,8 @@ from PIL import Image
 
 
 class ExampleShell:
-    def __init__(self, configs):
-
-
+    def __init__(self, configs, debug=False):
         # Configure logging
-
         logging.basicConfig(
             level=logging.INFO,
             format='%(asctime)s - %(levelname)s - %(message)s'
@@ -26,33 +23,37 @@ class ExampleShell:
         start_time = time.time()
         logging.info("Starting Youtube Shell...")
 
-        # authenticate replicate api
-        self.replicate_token = os.getenv('REPLICATE_API_TOKEN')
+        self.debug = debug
 
-        # Initialize Replicate API client
-        self.replicate_client = replicate.Client(api_token=self.replicate_token)
+        # Initialize Replicate API client only if not in debug mode and token is available
+        self.replicate_token = os.getenv('REPLICATE_API_TOKEN')
+        if not debug and self.replicate_token:
+            self.replicate_client = replicate.Client(api_token=self.replicate_token)
 
         # Create a new directory for this run
         self.output_dir = self.create_output_directory()
-
-        # create staging directory
+        # Create staging directory
         self.staging_dir = self.create_staging_directory()
 
-
-
         # Step 1: Handle photo
-        prompt = "sleepy galaxy in the style of TKYO"
-        photo_path = self.handle_staging_photos(prompt)
-        logging.info(f"Photo used for this run: {photo_path}")
+        if not debug:
+            prompt = "sleepy galaxy in the style of TKYO"
+            photo_path = self.handle_staging_photos(prompt)
+            logging.info(f"Photo used for this run: {photo_path}")
+        else:
+            photo_path = 'local_run/photo.jpg'
+            logging.info(f"Debug mode: Using local photo at {photo_path}")
 
-        # Step 2: Generate music
-        # music_url = self.generate_music_from_text()
-        # if music_url:
-        #     audio_path = os.path.join(self.output_dir, "output_audio.mp3")
-        #     self.download_audio_file(music_url, audio_path)
-        #     logging.info(f"Music generated and saved at: {audio_path}")
-
-        audio_path = "output_2024-11-04_20-41-37/looped_audio.mp3"
+        # Step 2: Generate or set music
+        if not debug:
+            music_url = self.generate_music_from_text()
+            if music_url:
+                audio_path = os.path.join(self.output_dir, "output_audio.mp3")
+                self.download_audio_file(music_url, audio_path)
+                logging.info(f"Music generated and saved at: {audio_path}")
+        else:
+            audio_path = 'local_run/looped_audio.mp3'
+            logging.info(f"Debug mode: Using local audio file at {audio_path}")
 
         # Step 3: Loop audio
         looped_audio_path = os.path.join(self.output_dir, "looped_audio.mp3")
@@ -61,21 +62,10 @@ class ExampleShell:
 
         # Step 4: Combine photo and looped audio into video
         output_video_path = os.path.join(self.output_dir, "final_output_video.mp4")
-        final_video = self.create_video_with_photo_and_audio(photo_path, looped_audio_path, output_video_path)
-        if final_video:
-            logging.info(f"Final video with photo and audio saved at: {output_video_path}")
+        self.create_video_with_photo_and_audio(photo_path, looped_audio_path, output_video_path)
+        logging.info(f"Final video with photo and audio saved at: {output_video_path}")
 
-
-
-
-
-
-
-
-
-
-
-        # End SHELL Timer
+        # End timer
         end_time = time.time()
         elapsed_time = end_time - start_time
         logging.info(f"ExampleShell completed in {elapsed_time:.2f} seconds.")
