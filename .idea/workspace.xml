@@ -5,12 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="66930b07-aa8d-41f4-be85-0faac9c0f4f5" name="Changes" comment="init">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/client_secrets.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/example/utilities/youtube_uploader.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/token.pickle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/example/example.py" beforeDir="false" afterPath="$PROJECT_DIR$/example/example.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/utilities/logic_pro_loop_and_bounce.scpt" beforeDir="false" afterPath="$PROJECT_DIR$/example/utilities/logic_pro_loop_and_bounce.scpt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -60,11 +57,11 @@
       <recent name="$PROJECT_DIR$/local_run" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/staging_files" />
       <recent name="$PROJECT_DIR$/example/utilities" />
       <recent name="$PROJECT_DIR$/staging_files/music" />
       <recent name="$PROJECT_DIR$/staging_files/videos" />
       <recent name="$PROJECT_DIR$" />
-      <recent name="$PROJECT_DIR$/output_2024-11-04_22-11-03" />
     </key>
   </component>
   <component name="RunManager" selected="Python.main">
