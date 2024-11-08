@@ -181,26 +181,6 @@ class ExampleShell:
         except Exception as e:
             logging.error(f"Failed to move {video_file}. Reason: {e}")
 
-    # def upload_to_youtube(self, video_path):
-    #     """Upload the video to YouTube."""
-    #     try:
-    #         youtube_uploader = YouTubeUploader(credentials_file='client_secrets.json')
-    #         title = "Relaxing Sleep Video with Soothing Sounds"
-    #         description = (
-    #             "This video features calming visuals and relaxing ambient music "
-    #             "to help you unwind and fall asleep."
-    #         )
-    #         category_id = "22"  # YouTube category for People & Blogs
-    #         privacy_status = "unlisted"
-    #         logging.info("Initiating YouTube upload...")
-    #         video_id = youtube_uploader.upload_video(video_path, title, description, category_id, privacy_status)
-    #         if video_id:
-    #             logging.info(f"Video uploaded successfully with ID: {video_id}")
-    #         else:
-    #             logging.error("Video upload failed.")
-    #     except Exception as e:
-    #         logging.error(f"An error occurred during YouTube upload: {e}")
-
     def upload_to_youtube(self, video_path):
         """Upload the video to YouTube with optimized settings for gaining subscribers."""
         try:
@@ -209,30 +189,27 @@ class ExampleShell:
             # Generate an optimized title with engaging elements
             title_options = [
                 "Relaxing Ambient Music for Deep Sleep & Relaxation 🌌 | 10 Hours of Soothing Sounds",
-                "Calming Sleep Music - Fall Asleep Fast with Peaceful Ambience 💤 | 10 Hours",
-                "Ultimate 10-Hour Relaxing Sleep Music 🛌 | Deep Sleep Sounds for Restful Nights",
-                "Peaceful Night Meditation Music 🌙 | 10 Hours of Deep Relaxation and Serenity",
-                "10 Hours of Deep Relaxation Sounds 🌠 | Calming Ambience for Better Sleep",
-                "Soothing Rain Sounds & Relaxing Sleep Music 🌧️ | 10 Hours of Calm",
-                "10-Hour Deep Sleep Music | Ultimate Calm & Peaceful Night Ambience 🌌",
-                "Peaceful Background Music for Meditation & Sleep 🧘 | 10 Hours",
-                "Ultimate Deep Sleep Ambience | 10 Hours of Relaxing White Noise 🌌",
-                "Tranquil Ocean Waves 🌊 | 10 Hours of Sleep-Inducing Sounds",
-                "10 Hours of Rainforest Sounds 🌳 | Ambient Music for Rest & Relaxation",
-                "Cozy Fireplace & Soothing Music 🔥 | 10 Hours of Peaceful Sleep",
-                "Serene Lake Ambience | 10 Hours of Tranquil Sounds for Sleep & Relaxation",
-                "Calming Piano Music for Peaceful Sleep 🎹 | 10 Hours",
-                "Mountain Stream & Birdsong 🌄 | 10 Hours of Calming Nature Sounds",
-                "Deep Sleep Ocean Sounds 🌊 | 10 Hours of Soothing Waves for Restful Sleep",
-                "Calm Forest Ambience 🌲 | 10 Hours of Nature Sounds for Sleep & Relaxation",
-                "Tranquil Night with Soft Piano 🌙 | 10 Hours of Calm Sleep Music",
-                "Ultimate Focus & Relaxation Sounds 🔊 | 10 Hours of Study and Sleep Music",
-                "Peaceful Desert Night 🌌 | 10 Hours of Relaxing Ambience & Nature Sounds",
-                "Gentle Waterfall Sounds for Sleep & Meditation 💧 | 10 Hours",
-                "Ambient Rain & Thunder Sounds ⛈️ | 10 Hours of Deep Relaxation",
                 "10 Hours of Binaural Beats for Deep Sleep & Relaxation 🎶",
-                "Wind Chimes & Gentle Wind 🌬️ | 10 Hours of Calm Ambience for Meditation"
+                "Ultimate 10-Hour Binaural Beats for Sleep & Meditation 🛌 | Deep Relaxation",
+                "10 Hours of Pure Binaural Beats 🌙 | Achieve Deep Sleep & Relaxation",
+                "Soothing Binaural Beats for Restful Sleep 🌌 | 10 Hours of Calm",
+                "Peaceful Binaural Meditation Music 🧘 | 10 Hours for Sleep & Relaxation",
+                "10 Hours of Calming Binaural Waves 🌊 | Ultimate Sleep & Meditation Sounds",
+                "Deep Sleep with Binaural Beats 🌙 | 10 Hours of Soothing Meditation Music",
+                "Binaural Soundscape for Deep Relaxation 🌌 | 10 Hours for Sleep",
+                "10-Hour Relaxing Binaural Beats | Meditative Music for Deep Sleep 🎶",
+                "Tranquil Binaural Ambience 🌠 | 10 Hours of Deep Sleep Music",
+                "Ultimate Deep Sleep with Binaural Beats 🔊 | 10 Hours of Healing Sounds",
+                "10 Hours of Peaceful Binaural Tones 🌙 | Perfect for Meditation & Sleep",
+                "Calming Binaural Meditation Music 🌌 | 10 Hours for Sleep and Relaxation",
+                "Binaural Beats & Soothing Ambience 🌙 | 10 Hours for Restful Sleep",
+                "10 Hours of Gentle Binaural Beats for Sleep 🎶 | Deep Relaxation",
+                "Ultimate Calm Binaural Ambience 🌌 | 10 Hours of Sleep-Inducing Sounds",
+                "10-Hour Binaural Sound Therapy 🎶 | Fall Asleep Fast with Relaxing Music",
+                "Healing Binaural Tones 🌙 | 10 Hours of Relaxation for Sleep & Meditation",
+                "Deep Sleep Music with Binaural Beats 🌌 | 10 Hours of Calming Sounds"
             ]
+
             title = random.choice(title_options)
 
             # Create an optimized description to engage viewers and encourage subscribing
