@@ -1,7 +1,3 @@
-staging/
-local_run/
+staging_files/*
 output_*/
-staging/*
-local_run/*
-output_*/*
 .venv

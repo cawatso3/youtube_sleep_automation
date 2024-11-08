@@ -1,0 +1,36 @@
+set targetFolder to "/Users/mac/PycharmProjects/youtube_sleep_automation/staging_files/music"
+
+tell application "Logic Pro X"
+	activate
+	delay 2
+
+	-- Open the import file dialog (Shift + Command + I)
+	tell application "System Events"
+		keystroke "I" using {shift down, command down}
+		delay 2
+
+		-- Navigate to the target folder
+		keystroke "G" using {shift down, command down} -- Opens "Go to Folder" in the dialog
+		delay 1
+		keystroke targetFolder
+		delay 1
+		keystroke return
+		delay 2 -- Allow folder contents to load
+
+		-- Select the first file in the folder
+		key code 125 -- Down Arrow key -- Move focus to the file list
+		delay 1
+		keystroke return -- Open the selected file
+		keystroke return -- Converts file in case popup shows
+	end tell
+	delay 2 -- Allow time for the file to load
+
+	-- Set the Loop (Press "L" to loop the selected region)
+	tell application "System Events" to keystroke "L"
+	delay 1
+
+	-- Bounce/export the project (Command + B)
+	tell application "System Events" to keystroke "B" using {command down}
+	delay 2
+end tell
+
