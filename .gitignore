@@ -1,3 +1,5 @@
 staging_files/*
 output_*/
 .venv
+client_secrets.json
+token.pickle
