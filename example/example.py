@@ -6,12 +6,14 @@ from datetime import datetime
 from pydub import AudioSegment
 from moviepy.editor import VideoFileClip, concatenate_videoclips, ColorClip, AudioFileClip
 # from moviepy.video.fx.all import loop
+import random
 
 from example.utilities.youtube_uploader import YouTubeUploader
 from example.utilities.logic_pro import LogicProAutomation
 
 class ExampleShell:
-    def __init__(self, configs, debug=True, duration_hours=0.0083):
+    def __init__(self, configs, debug=True, duration_hours=0.5):
+        #30 min = 0.5
         # 1 min duration = 0.0166
         # 30-sec duration = 0.0083
 
@@ -50,12 +52,12 @@ class ExampleShell:
             logging.info(f"Video created and saved at: {output_video_path}")
 
             # Step 3: Archive used files
-            # logging.info("Moving used music and video files to output directory for archival...")
-            # self.cleanup_directories(music_file, video_file)
+            logging.info("Moving used music and video files to output directory for archival...")
+            self.cleanup_directories(music_file, video_file)
 
             # Step 4: Upload to YouTube
-            # logging.info("Step 4: Uploading video to YouTube...")
-            # self.upload_to_youtube(output_video_path)
+            logging.info("Step 4: Uploading video to YouTube...")
+            self.upload_to_youtube(output_video_path)
 
         except Exception as e:
             logging.error(f"An error occurred in the pipeline: {e}")
@@ -94,10 +96,9 @@ class ExampleShell:
             logging.error(f"Failed to retrieve video file: {e}")
             raise
 
-    def create_video_with_black_screen(self, video_file, audio_path, output_video_path, duration_hours,
-                                       buffer_duration=1):
+    def create_video_with_black_screen(self, video_file, audio_path, output_video_path, duration_hours):
         """
-        Create a video with an intro, a slight buffer, an initial looped segment covering the audio duration,
+        Create a video with an intro, an initial looped segment covering the audio duration,
         followed by a black screen if necessary.
 
         Parameters:
@@ -123,7 +124,7 @@ class ExampleShell:
             audio_duration = audio_clip.duration
 
             # Calculate loop duration to cover audio duration, minus intro and buffer
-            loop_duration = min(total_duration, audio_duration) - intro_clip.duration - buffer_duration
+            loop_duration = min(total_duration, audio_duration) - intro_clip.duration
             if loop_duration <= 0:
                 logging.warning("Intro and buffer duration exceed or match the specified total duration.")
                 # Use only the intro clip trimmed to total_duration
@@ -134,9 +135,6 @@ class ExampleShell:
                 num_loops = int(loop_duration / video_clip.duration) + 1
                 logging.info("Creating looped video segment to match audio duration...")
                 looped_video = concatenate_videoclips([video_clip] * num_loops).subclip(0, loop_duration)
-
-                # Create a buffer clip (black screen) between intro and main video
-                # buffer_clip = ColorClip(size=video_clip.size, color=(0, 0, 0), duration=buffer_duration)
 
                 # Concatenate intro, buffer, and looped main video, then set audio
                 main_video_with_intro = concatenate_videoclips([intro_clip, looped_video]).set_audio(
@@ -183,88 +181,100 @@ class ExampleShell:
         except Exception as e:
             logging.error(f"Failed to move {video_file}. Reason: {e}")
 
+    # def upload_to_youtube(self, video_path):
+    #     """Upload the video to YouTube."""
+    #     try:
+    #         youtube_uploader = YouTubeUploader(credentials_file='client_secrets.json')
+    #         title = "Relaxing Sleep Video with Soothing Sounds"
+    #         description = (
+    #             "This video features calming visuals and relaxing ambient music "
+    #             "to help you unwind and fall asleep."
+    #         )
+    #         category_id = "22"  # YouTube category for People & Blogs
+    #         privacy_status = "unlisted"
+    #         logging.info("Initiating YouTube upload...")
+    #         video_id = youtube_uploader.upload_video(video_path, title, description, category_id, privacy_status)
+    #         if video_id:
+    #             logging.info(f"Video uploaded successfully with ID: {video_id}")
+    #         else:
+    #             logging.error("Video upload failed.")
+    #     except Exception as e:
+    #         logging.error(f"An error occurred during YouTube upload: {e}")
+
     def upload_to_youtube(self, video_path):
-        """Upload the video to YouTube."""
+        """Upload the video to YouTube with optimized settings for gaining subscribers."""
         try:
             youtube_uploader = YouTubeUploader(credentials_file='client_secrets.json')
-            title = "Relaxing Sleep Video with Soothing Sounds"
+
+            # Generate an optimized title with engaging elements
+            title_options = [
+                "Relaxing Ambient Music for Deep Sleep & Relaxation 🌌 | 10 Hours of Soothing Sounds",
+                "Calming Sleep Music - Fall Asleep Fast with Peaceful Ambience 💤 | 10 Hours",
+                "Ultimate 10-Hour Relaxing Sleep Music 🛌 | Deep Sleep Sounds for Restful Nights",
+                "Peaceful Night Meditation Music 🌙 | 10 Hours of Deep Relaxation and Serenity",
+                "10 Hours of Deep Relaxation Sounds 🌠 | Calming Ambience for Better Sleep",
+                "Soothing Rain Sounds & Relaxing Sleep Music 🌧️ | 10 Hours of Calm",
+                "10-Hour Deep Sleep Music | Ultimate Calm & Peaceful Night Ambience 🌌",
+                "Peaceful Background Music for Meditation & Sleep 🧘 | 10 Hours",
+                "Ultimate Deep Sleep Ambience | 10 Hours of Relaxing White Noise 🌌",
+                "Tranquil Ocean Waves 🌊 | 10 Hours of Sleep-Inducing Sounds",
+                "10 Hours of Rainforest Sounds 🌳 | Ambient Music for Rest & Relaxation",
+                "Cozy Fireplace & Soothing Music 🔥 | 10 Hours of Peaceful Sleep",
+                "Serene Lake Ambience | 10 Hours of Tranquil Sounds for Sleep & Relaxation",
+                "Calming Piano Music for Peaceful Sleep 🎹 | 10 Hours",
+                "Mountain Stream & Birdsong 🌄 | 10 Hours of Calming Nature Sounds",
+                "Deep Sleep Ocean Sounds 🌊 | 10 Hours of Soothing Waves for Restful Sleep",
+                "Calm Forest Ambience 🌲 | 10 Hours of Nature Sounds for Sleep & Relaxation",
+                "Tranquil Night with Soft Piano 🌙 | 10 Hours of Calm Sleep Music",
+                "Ultimate Focus & Relaxation Sounds 🔊 | 10 Hours of Study and Sleep Music",
+                "Peaceful Desert Night 🌌 | 10 Hours of Relaxing Ambience & Nature Sounds",
+                "Gentle Waterfall Sounds for Sleep & Meditation 💧 | 10 Hours",
+                "Ambient Rain & Thunder Sounds ⛈️ | 10 Hours of Deep Relaxation",
+                "10 Hours of Binaural Beats for Deep Sleep & Relaxation 🎶",
+                "Wind Chimes & Gentle Wind 🌬️ | 10 Hours of Calm Ambience for Meditation"
+            ]
+            title = random.choice(title_options)
+
+            # Create an optimized description to engage viewers and encourage subscribing
             description = (
-                "This video features calming visuals and relaxing ambient music "
-                "to help you unwind and fall asleep."
+                f"{title}\n\n"
+                "Immerse yourself in 10 hours of soothing, relaxing ambient sounds designed to help you "
+                "unwind, meditate, and drift into deep, restful sleep. Ideal for background ambiance, relaxation, "
+                "and creating a calming environment.\n\n"
+                "📌 Like, Share, and Subscribe for more relaxing sounds and sleep music.\n"
+                "🔔 Don't forget to hit the notification bell to stay updated with new uploads!\n\n"
+                "Follow us on our journey to peace and relaxation.\n\n"
+                "#RelaxingMusic #DeepSleep #AmbientSounds #Meditation #Calm #SleepMusic"
             )
-            category_id = "22"  # YouTube category for People & Blogs
+
+            # Use an optimal YouTube category for relaxation and music content
+            # 10: Music, 22: People & Blogs, 24: Entertainment
+            category_id = "10"  # Music category tends to work well for ambient and sleep videos
+
+            # Set video privacy status to public to reach a larger audience
             privacy_status = "unlisted"
+
+            # Set an optimized thumbnail (replace 'thumbnail_path' with actual path to the file)
+            # thumbnail_path = "/path/to/optimized_thumbnail.jpg"  # Update this path with the actual thumbnail location
+
             logging.info("Initiating YouTube upload...")
-            video_id = youtube_uploader.upload_video(video_path, title, description, category_id, privacy_status)
+            video_id = youtube_uploader.upload_video(
+                video_path,
+                title=title,
+                description=description,
+                category_id=category_id,
+                privacy_status=privacy_status,
+                # thumbnail=thumbnail_path  # Optional: Add thumbnail
+            )
+
             if video_id:
                 logging.info(f"Video uploaded successfully with ID: {video_id}")
+                logging.info(f"Video Title: {title}")
             else:
                 logging.error("Video upload failed.")
+
         except Exception as e:
             logging.error(f"An error occurred during YouTube upload: {e}")
 
-    # def create_looped_audio_with_crossfade(self, audio_file, output_path, duration, crossfade_duration=2000,
-    #                                        chunk_size_ms=60000):
-    #     """
-    #     Loop the audio file with crossfade until reaching or slightly exceeding the specified duration,
-    #     and export in chunks with progress tracking.
-    #     """
-    #     try:
-    #         audio = AudioSegment.from_file(audio_file)
-    #         looped_audio = audio
-    #         logging.info("Starting audio looping...")
-    #
-    #         # Repeat and crossfade until reaching or slightly exceeding target duration
-    #         while len(looped_audio) < duration:
-    #             looped_audio = looped_audio.append(audio, crossfade=crossfade_duration)
-    #             progress_percentage = min(len(looped_audio) / duration * 100, 100)
-    #             logging.info(f"Audio looping progress: {progress_percentage:.2f}% complete.")
-    #
-    #         # Directory for temporary chunk exports
-    #         temp_dir = os.path.join(self.output_dir, "temp_audio_chunks")
-    #         os.makedirs(temp_dir, exist_ok=True)
-    #
-    #         # Export each chunk with progress tracking
-    #         logging.info("Starting export with chunked progress tracking...")
-    #         total_length_ms = len(looped_audio)
-    #         start = 0
-    #         chunk_files = []
-    #
-    #         while start < total_length_ms:
-    #             end = min(start + chunk_size_ms, total_length_ms)
-    #             chunk = looped_audio[start:end]
-    #             chunk_path = os.path.join(temp_dir, f"chunk_{start // chunk_size_ms + 1}.mp3")
-    #             chunk.export(chunk_path, format="mp3")
-    #             chunk_files.append(chunk_path)
-    #             start += chunk_size_ms
-    #
-    #             # Log export progress and memory usage
-    #             progress_percentage = min(start / total_length_ms * 100, 100)
-    #             memory_info = psutil.virtual_memory()  # Get memory stats if psutil is available
-    #             logging.info(f"Exporting audio chunk {start // chunk_size_ms}: {progress_percentage:.2f}% complete. "
-    #                          f"Memory Usage: {memory_info.percent}%")
-    #
-    #         # Combining chunks into the final output
-    #         logging.info("Combining chunks into the final audio file...")
-    #         final_audio = AudioSegment.empty()
-    #         for i, chunk_path in enumerate(chunk_files, start=1):
-    #             logging.info(f"Adding chunk {i} to final audio...")
-    #             final_audio += AudioSegment.from_file(chunk_path)
-    #
-    #         # Log before final export step to diagnose potential issues
-    #         logging.info("Final audio assembled, starting final export to output file...")
-    #         memory_info = psutil.virtual_memory()
-    #         logging.info(f"Memory before final export: {memory_info.percent}%")
-    #
-    #         # Export the final combined audio
-    #         final_audio.export(output_path, format="mp3")
-    #         logging.info(f"Final looped audio with crossfade saved at: {output_path}")
-    #
-    #         # Clean up temporary chunk files
-    #         shutil.rmtree(temp_dir)
-    #         logging.info("Temporary chunk files cleaned up.")
-    #
-    #     except Exception as e:
-    #         logging.error(f"Failed to create looped audio with crossfade: {e}")
-    #         raise
+
 
